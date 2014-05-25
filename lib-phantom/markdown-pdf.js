@@ -8,7 +8,7 @@ var args = ["in", "out", "runningsPath", "cssPath", "highlightCssPath", "paperFo
   return args
 }, {})
 
-page.open(page.libraryPath + "/../html5bp/index.html", function (status) {
+page.open(page.libraryPath + "/../layout/index.html", function (status) {
   
   if (status == "fail") {
     page.close()
@@ -18,35 +18,22 @@ page.open(page.libraryPath + "/../html5bp/index.html", function (status) {
   
   // Add custom CSS to the page
   page.evaluate(function(cssPaths) {
-    
     var head = document.querySelector("head")
     
     cssPaths.forEach(function(cssPath) {
-      
       var css = document.createElement("link")
       
       css.rel = "stylesheet"
       css.href = cssPath
       
       head.appendChild(css)
-
     });
-    
   }, [args.cssPath, args.highlightCssPath])
   
   // Add the HTML to the page
   page.evaluate(function(html) {
-    
     var body = document.querySelector("body")
-
-    // Remove the paragraph HTML5 boilerplate adds
-    body.removeChild(document.querySelector("p"))
-    
-    var container = document.createElement("div")
-    container.innerHTML = html
-    
-    body.appendChild(container)
-    
+    body.innerHTML = html;
   }, fs.read(args.in))
   
   // Set the PDF paper size
