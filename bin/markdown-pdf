@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-var fs = require('fs')
-  , markdownpdf = require('../')
+var markdownpdf = require('../')
   , program = require('commander')
 
 program.version(require('../package.json').version)
@@ -18,7 +17,9 @@ program.version(require('../package.json').version)
   .option('-o, --out [path]', "Path of where to save the PDF")
   .parse(process.argv)
 
-program.out = program.out || program.args[0].replace(/\.(markdown|md)/g, "") + ".pdf"
+if (program.args.length === 0) program.help()
+
+program.out = program.out || program.args[0].replace(/\.m(ark)?d(own)?/gi, "") + ".pdf"
 
 var opts = {
     phantomPath: program.phantomPath
@@ -32,8 +33,8 @@ var opts = {
 }
 
 markdownpdf(opts).from(program.args[0]).to(program.out, function (er) {
-  fs.realpath(program.out, function (er, path) {
-    if (er) return console.error(er)
-    console.log("Created PDF file at", path)
-  })
+  if (er) {
+    console.error(er)
+    return process.exit(-1)
+  }
 })
